@@ -42,3 +42,30 @@ int main(void)
     free(ybuf);
     return 0;
 }
+
+//alternate program
+#include <stdio.h>
+#include "iir_coeffs.h"
+#include "input_data.h"
+float y[INPUT_LEN];
+int main(void)
+{
+    for(int n = 0; n < INPUT_LEN; n++)
+    {
+        float acc_b = 0;
+        for(int k = 0; k < NB; k++)
+        {
+            if(n-k >= 0)
+                acc_b += iir_b[k] * input_data[n-k];
+        }
+        float acc_a = 0;
+        for(int j = 1; j < NA; j++) // start from 1 (skip a0)
+        {
+            if(n-j >= 0)
+                acc_a += iir_a[j] * y[n-j];
+        }
+        y[n] = (acc_b - acc_a) / iir_a[0];
+        printf("y[%d] = %f\n", n, y[n]);
+    }
+    return 0;
+}
