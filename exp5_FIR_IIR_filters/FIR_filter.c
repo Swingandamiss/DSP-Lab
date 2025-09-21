@@ -33,3 +33,26 @@ int main(void)
     free(delay);
     return 0;
 }
+
+//alternative code
+#include <stdio.h>
+#include "fir_coeffs.h"
+#include "input_data.h"
+
+float y[INPUT_LEN];
+
+int main(void)
+{
+    for(int n = 0; n < INPUT_LEN; n++)
+    {
+        y[n] = 0;
+        for(int k = 0; k < FIR_LEN; k++)
+        {
+            if(n-k >= 0)
+                y[n] += fir_b[k] * input_data[n-k];
+        }
+        printf("y[%d] = %f\n", n, y[n]);
+    }
+    return 0;
+}
+
