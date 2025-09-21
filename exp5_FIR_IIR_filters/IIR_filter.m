@@ -47,3 +47,32 @@ end
 fprintf(fid, '#endif // INPUT_DATA_H\n');
 fclose(fid);
 disp('Written iir_coeffs.h and input_data.h. Copy into CCS project.');
+
+%alternate program
+fs = 8000;             % Sampling frequency
+fc = 1000;             % Cutoff frequency
+order = 2;             % Low order for simplicity
+% Design IIR lowpass Butterworth
+[b, a] = butter(order, fc/(fs/2));
+% Example input: sum of two sines
+n = 0:99;
+x = sin(2*pi*200*n/fs) + sin(2*pi*1500*n/fs);
+% Write coefficients to iir_coeffs.h
+fid = fopen('iir_coeffs.h','w');
+fprintf(fid, '#define NB %d\n', length(b));
+fprintf(fid, '#define NA %d\n', length(a));
+fprintf(fid, 'float iir_b[NB] = {');
+fprintf(fid, '%f, ', b(1:end-1));
+fprintf(fid, '%f};\n', b(end));
+fprintf(fid, 'float iir_a[NA] = {');
+fprintf(fid, '%f, ', a(1:end-1));
+fprintf(fid, '%f};\n', a(end));
+fclose(fid);
+% Write input to input_data.h
+fid = fopen('input_data.h','w');
+fprintf(fid, '#define INPUT_LEN %d\n', length(x));
+fprintf(fid, 'float input_data[INPUT_LEN] = {');
+fprintf(fid, '%f, ', x(1:end-1));
+fprintf(fid, '%f};\n', x(end));
+fclose(fid);
+disp('Generated iir_coeffs.h and input_data.h');
